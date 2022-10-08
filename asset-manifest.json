@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/scraper-front-end/static/js/main.1d72c87a.js",
+    "static/js/255.e1110b3d.chunk.js": "/scraper-front-end/static/js/255.e1110b3d.chunk.js",
+    "index.html": "/scraper-front-end/index.html",
+    "main.1d72c87a.js.map": "/scraper-front-end/static/js/main.1d72c87a.js.map",
+    "255.e1110b3d.chunk.js.map": "/scraper-front-end/static/js/255.e1110b3d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.1d72c87a.js"
+  ]
+}
