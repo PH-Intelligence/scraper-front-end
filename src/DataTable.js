@@ -69,8 +69,12 @@ export default function DataTable(props) {
       <DataGrid
         rows={tableData}
         columns={columns}
-        pageSize={10}
         rowsPerPageOptions={[10,25,100]}
+        initialState={{
+          pagination: {
+            pageSize: 10,
+          },
+        }}
         components={props.logged_in ? {Toolbar: GridToolbar}: {}}
       />
     </div>

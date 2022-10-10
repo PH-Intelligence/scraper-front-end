@@ -27,7 +27,8 @@ export default function Auth() {
         <div className="description">
           Sign in via magic link with your email below to unlock:
           <ul>
-            <li>Weeks of company data</li>
+            <li>Many more companies</li>
+            <li>Weeks of historical employee and job opening data</li>
             <li>CSV exports</li>
           </ul>
         </div>
