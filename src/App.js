@@ -1,29 +1,24 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import ProTip from './ProTip';
+import Home from './Home';
+import { CompanyIndex, Company } from './CompanyIndex';
 import DataTable from './DataTable';
+import { supabase } from './supabaseClient';
+import Container from '@mui/material/Container';
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
+import InfoIcon from '@mui/icons-material/Info';
+import BusinessIcon from '@mui/icons-material/Business';
 
-import { supabase } from './supabaseClient'
-import './index.css'
-import Auth from './Auth'
-import Account from './Account'
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://twitter.com/jaypinho">
-        Jay Pinho
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Outlet,
+  useMatch,
+  useParams
+} from "react-router-dom";
 
 export default function App() {
 
@@ -40,25 +35,53 @@ export default function App() {
   }, [])
 
   return (
-    <>
-      <div className="container" style={{ padding: '50px 0 100px 0' }}>
-        {!session ? (
-          <Auth />
-        ) : (
-          <Account key={session.user.id} session={session} />
-        )}
-      </div>
-      <Container maxWidth="md">
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Company Tracker
-          </Typography>
-          <DataTable logged_in={session} />
-          <ProTip />
-          <Copyright />
-        </Box>
-      </Container>
-    </>
-  )
+    <Router>
+      <ListItemButton component={Link} to="/">
+        <ListItemIcon>
+          <HomeIcon />
+        </ListItemIcon>
+        <ListItemText primary="Home" />
+      </ListItemButton>
+      <ListItemButton component={Link} to="/companies">
+        <ListItemIcon>
+          <BusinessIcon />
+        </ListItemIcon>
+        <ListItemText primary="Companies" />
+      </ListItemButton>
+      <ListItemButton component={Link} to="/about">
+        <ListItemIcon>
+          <InfoIcon />
+        </ListItemIcon>
+        <ListItemText primary="About" />
+      </ListItemButton>
+      <Routes>
+        <Route path="companies" element={<Companies logged_in={session}/>}/>
+        <Route path="companies/:companyId" element={<Company logged_in={session} />} />
+        <Route path="about" element={<About/>}/>
+        <Route path="/" element={<Home logged_in={session} />}/>
+      </Routes>
+    </Router>
+  );
 
+}
+
+function About() {
+  return (
+    <Container>
+      <h2>About</h2>
+      <div>
+      Stay up to speed with the latest in company hiring, job openings, employee satisfaction, and funding rounds data.
+      </div>
+    </Container>
+  );
+}
+
+function Companies(props) {
+
+  return (
+    <div>
+      <h2>Companies</h2>
+      <CompanyIndex logged_in={props.logged_in} />
+    </div>
+  );
 }

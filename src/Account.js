@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 const Account = ({ session }) => {
   const [loading, setLoading] = useState(true)
@@ -73,37 +75,19 @@ const Account = ({ session }) => {
         <form onSubmit={updateProfile} className="form-widget">
           <div>Email: {session.user.email}</div>
           <div>
-            <label htmlFor="username">Name</label>
-            <input
-              id="username"
-              type="text"
-              value={username || ''}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            <br/>
+            <TextField id="username" label="Name" variant="outlined" value={username || ''} onChange={(e) => setUsername(e.target.value)} />
           </div>
           <div>
-            <label htmlFor="website">Website</label>
-            <input
-              id="website"
-              type="url"
-              value={website || ''}
-              onChange={(e) => setWebsite(e.target.value)}
-            />
+            <br/>
+            <TextField id="website" label="Website" variant="outlined" value={website || ''} onChange={(e) => setWebsite(e.target.value)} />
           </div>
           <div>
-            <button className="button primary block" disabled={loading}>
-              Update profile
-            </button>
+            <Button variant="contained" className="button primary block" disabled={loading} type="submit">Update profile</Button>
           </div>
         </form>
       )}
-      <button
-        type="button"
-        className="button block"
-        onClick={() => supabase.auth.signOut()}
-      >
-        Sign Out
-      </button>
+      <Button variant="text" className="button block" type="button" onClick={() => supabase.auth.signOut()}>Sign Out</Button>
     </div>
   )
 }

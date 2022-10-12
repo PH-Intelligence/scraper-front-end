@@ -14,12 +14,14 @@
   "dependencies": {
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
+    "@mui/icons-material": "^5.10.9",
     "@mui/material": "latest",
     "@mui/x-data-grid": "^5.17.6",
     "@supabase/supabase-js": "^2.0.0-rc.10",
     "gh-pages": "^4.0.0",
     "react": "latest",
     "react-dom": "latest",
+    "react-router-dom": "^6.4.2",
     "react-scripts": "latest"
   },
   "browserslist": {

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { supabase } from './supabaseClient'
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false)
@@ -36,18 +38,9 @@ export default function Auth() {
           'Sending magic link...'
         ) : (
           <form onSubmit={handleLogin}>
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              className="inputField"
-              type="email"
-              placeholder="Your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button className="button block" aria-live="polite">
-              Send magic link
-            </button>
+            <TextField id="email" label="Email" variant="outlined" className="inputField" type="email" placeholder="Your email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <br />
+            <Button variant="contained" className="button block" aria-live="polite" type="submit">Send magic link</Button>
           </form>
         )}
       </div>
