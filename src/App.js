@@ -79,9 +79,9 @@ function About() {
 function Companies(props) {
 
   return (
-    <div>
+    <Container>
       <h2>Companies</h2>
       <CompanyIndex logged_in={props.logged_in} />
-    </div>
+    </Container>
   );
 }

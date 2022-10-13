@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { supabase } from './supabaseClient'
 import { Link } from "react-router-dom";
 
 const columns = [
   // { field: 'id', headerName: 'ID' },
-  { field: 'timestamp', headerName: 'Date & Time', valueFormatter: (params) => { return new Date(params.value * 1000).toLocaleString() }, flex: 0.5 },
+  { field: 'timestamp', headerName: 'Date & Time', valueFormatter: (params) => { return new Date(params.value * 1000).toLocaleString(undefined, {year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric"}) }, flex: 0.75 }, // https://stackoverflow.com/a/34015511/3593246
   { field: 'companies_company', headerName: 'Company', valueGetter: (params) => { return params.row.companies.company }, renderCell: (
     params: GridRenderCellParams<String>) => (<Link to={`/companies/${params.row.companies.id}`}>{params.row.companies.company}</Link>
     ), flex: 1},
@@ -36,18 +36,32 @@ const columns = [
 export default function DataTable(props) {
 
   const [tableData, setTableData] = useState([]);
-  const [initiallyLoaded, setInitiallyLoaded] = useState(false);
-  const [companyId, setCompanyId] = useState(props.company_id);
-  const [loggedIn, setLoggedIn] = useState(props.logged_in);
+  const loggedIn = useRef(-1);
+  const companyId = useRef(-1);
+  const isLoading = useRef(false);
 
   useEffect(() => {
 
-    if (initiallyLoaded && props.company_id == companyId && props.logged_in == loggedIn) {
-      console.log('already loaded');
+    loggedIn.current = props.logged_in;
+    companyId.current = props.company_id;
+
+    // console.log(`useEffect has been triggered.\nprops.company_id == ${props.company_id} and companyId == ${companyId.current} (meaning they are equal: ${props.company_id == companyId.current})\nprops.logged_in == ${props.logged_in} and loggedIn == ${loggedIn.current} (meaning they are equal: ${props.logged_in == loggedIn.current})\nisLoading == ${isLoading.current}`)
+
+    if (loggedIn.current == -1 || companyId.current == -1) {
+      // console.log('has not yet loaded');
       return;
     }
 
+    if (isLoading.current) {
+      // console.log('already in process of loading, so do not call the API again');
+      return;
+    }
+
+    isLoading.current = true;
+
     (async() => {
+
+      // console.log('Async portion starting');
 
       var data, error;
 
@@ -64,7 +78,6 @@ export default function DataTable(props) {
             tags
           )
         `).eq('company_id', props.company_id).order('id', { ascending: false }))
-        console.log(data)
       } else {
         ({data, error} = await supabase.from('linkedin_jobs')
         .select(`
@@ -78,28 +91,25 @@ export default function DataTable(props) {
             tags
           )
         `).order('date_and_time', { ascending: false }))
-        console.log(data)
       }
+
+      // console.log('We have just made 1 DB call')
 
       if (error)
         console.log('Error occurred:', error)
       else
-        console.log('made a check');
         if (JSON.stringify(data) != JSON.stringify(tableData)) {
-          // var from_existing_data = tableData.length > 0 ? tableData[0]['companies'] : '';
-          // var from_supabase = data.sort((a, b) => a.companies.company.localeCompare(b.companies.company))[0]['companies'];
-          console.log(data);
-          setInitiallyLoaded(true);
-          setCompanyId(props.company_id);
-          setLoggedIn(props.logged_in);
-          setTableData(data)
+          isLoading.current = false;
+          setTableData(data);
+        } else {
+          // console.log('The table data is identical to the last one, so do not reset it')
         }
 
       })()
 
-  }, [ tableData, props.logged_in, props.company_id])
+  }, [props.logged_in, props.company_id])
 
-  console.log('ok');
+  // console.log('Render commencing...');
   return (
     <div style={{ height: 600, display: 'flex' }}>
       <DataGrid
