@@ -78,14 +78,24 @@ export function CompanyIndex(props) {
   }, [props.logged_in])
 
   const reSort = sort_method => {
-    if (sort_method == 'alphabetical') {
-      setCompanyData([...companyData].sort((a, b) => a.company.localeCompare(b.company)));
-    } else if (sort_method == 'employees') {
-      setCompanyData([...companyData].sort((a, b) => b.linkedin_jobs[0]['employees'] - a.linkedin_jobs[0]['employees']));
-    } else if (sort_method == 'openings') {
-      setCompanyData([...companyData].sort((a, b) => b.linkedin_jobs[0]['job_openings'] - a.linkedin_jobs[0]['job_openings']));
-    }
+    // console.log(companyData);
+    setCompanyData([...companyData].sort((a, b) => {
+
+      // We need these lines because, when we add a brand-new company that doesn't yet have any employees or job openings data, the sorting would throw an error unless we set their employees/openings numbers to 0
+      var a_employees_and_jobs = a.linkedin_jobs.length > 0 ? [a.linkedin_jobs[0].employees, a.linkedin_jobs[0].job_openings] : [0,0]
+      var b_employees_and_jobs = b.linkedin_jobs.length > 0 ? [b.linkedin_jobs[0].employees, b.linkedin_jobs[0].job_openings] : [0,0]
+
+      if (sort_method == 'alphabetical') {
+        return a.company.localeCompare(b.company);
+      } else if (sort_method == 'employees') {
+        return b_employees_and_jobs[0] - a_employees_and_jobs[0];
+      } else if (sort_method == 'openings') {
+        return b_employees_and_jobs[1] - a_employees_and_jobs[1];
+      }
+
+    }));
   };
+
 
   return (
   <>
