@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/scraper-front-end/static/js/main.c15cc851.js",
+    "main.js": "/scraper-front-end/static/js/main.ee0f54f5.js",
     "index.html": "/scraper-front-end/index.html",
-    "main.c15cc851.js.map": "/scraper-front-end/static/js/main.c15cc851.js.map"
+    "main.ee0f54f5.js.map": "/scraper-front-end/static/js/main.ee0f54f5.js.map"
   },
   "entrypoints": [
-    "static/js/main.c15cc851.js"
+    "static/js/main.ee0f54f5.js"
   ]
 }
