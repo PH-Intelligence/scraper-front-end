@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import Home from './Home';
-import { CompanyIndex, Company } from './CompanyIndex';
+import CompanyIndex from './CompanyIndex';
+import Company from './Company';
 import DataTable from './DataTable';
 import { supabase } from './supabaseClient';
 import Container from '@mui/material/Container';

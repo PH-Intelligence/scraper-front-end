@@ -12,18 +12,7 @@ import {
   useParams
 } from "react-router-dom";
 
-export function Company(props) {
-  let { companyId } = useParams();
-  // console.log(companyId);
-  return (
-    <Container>
-      <h3>Requested company ID: {companyId}</h3>
-      <DataTable logged_in={props.logged_in} company_id={companyId} />
-    </Container>
-    )
-}
-
-export function CompanyIndex(props) {
+export default function CompanyIndex(props) {
 
   const [companyData, setCompanyData] = useState([]);
   const loggedIn = useRef(-1);
