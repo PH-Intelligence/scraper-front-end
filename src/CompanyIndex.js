@@ -43,7 +43,7 @@ export default function CompanyIndex(props) {
         .select(`
           id,
           company,
-          tags,
+          tags_array,
           linkedin_jobs(employees, job_openings)
         `)
         .order('company', { ascending: true })
