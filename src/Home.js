@@ -33,10 +33,10 @@ export default function Home(props) {
     { field: 'companies_tags', 
       headerName: 'Categories',
       width: 300,
-      valueGetter: (params) => {return params.row.companies.tags},
+      valueGetter: (params) => {return params.row.companies.tags_array},
       valueFormatter: ({value}) => value,
       renderCell: (params: GridRenderCellParams<String>) => (
-            params.row.companies.tags ? params.row.companies.tags.split(",").map(x => <React.Fragment key={x}><span style={{backgroundColor: '#add4ce', borderRadius: '10px', padding: '0px 5px'}}>{x}</span>&nbsp;</React.Fragment>) : ''
+            params.row.companies.tags_array && params.row.companies.tags_array.length > 0 ? params.row.companies.tags_array.map(x => <React.Fragment key={x}><span style={{backgroundColor: '#add4ce', borderRadius: '10px', padding: '0px 5px'}}>{x}</span>&nbsp;</React.Fragment>) : ''
       )
     }
   ]
@@ -76,7 +76,7 @@ export default function Home(props) {
         companies (
           id,
           company,
-          tags,
+          tags_array,
           clearbit_logo
         )
       `).order('date_and_time', { ascending: false }))

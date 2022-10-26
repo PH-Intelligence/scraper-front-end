@@ -55,7 +55,7 @@ export default function Company(props) {
         .select(`
           id,
           company,
-          tags,
+          tags_array,
           linkedin,
           glassdoor,
           clearbit_logo,
@@ -151,7 +151,7 @@ export default function Company(props) {
         }
         <h3 style={{marginBottom: '3px'}}>{companyData != null ? companyData.company : ''}</h3>
         <div style={{marginBottom: '15px'}}>
-        { companyData.tags ? companyData.tags.split(",").map(x => <React.Fragment key={x}><span style={{backgroundColor: '#add4ce', borderRadius: '10px', padding: '0px 5px'}}>{x}</span>&nbsp;</React.Fragment>) : '' }
+        { companyData.tags_array && companyData.tags_array.length > 0 ? companyData.tags_array.map(x => <React.Fragment key={x}><span style={{backgroundColor: '#add4ce', borderRadius: '10px', padding: '0px 5px'}}>{x}</span>&nbsp;</React.Fragment>) : '' }
         </div>
         {
           companyData != null && companyData.linkedin != null ?
