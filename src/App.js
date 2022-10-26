@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import Home from './Home';
 import CompanyIndex from './CompanyIndex';
 import Company from './Company';
+import VC_Funds from './VC_Funds';
+import VC_Fund from './VC_Fund';
 import DataTable from './DataTable';
 import { supabase } from './supabaseClient';
 import Container from '@mui/material/Container';
 import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
-import InfoIcon from '@mui/icons-material/Info';
-import BusinessIcon from '@mui/icons-material/Business';
+import { Home as HomeIcon, Info, Business, Savings } from '@mui/icons-material';
 
 import {
   HashRouter as Router,
@@ -45,19 +45,27 @@ export default function App() {
       </ListItemButton>
       <ListItemButton component={Link} to="/companies">
         <ListItemIcon>
-          <BusinessIcon />
+          <Business />
         </ListItemIcon>
         <ListItemText primary="Companies" />
       </ListItemButton>
+      <ListItemButton component={Link} to="/vc-funds">
+        <ListItemIcon>
+          <Savings />
+        </ListItemIcon>
+        <ListItemText primary="VC Funds" />
+      </ListItemButton>
       <ListItemButton component={Link} to="/about">
         <ListItemIcon>
-          <InfoIcon />
+          <Info />
         </ListItemIcon>
         <ListItemText primary="About" />
       </ListItemButton>
       <Routes>
         <Route path="companies" element={<Companies logged_in={session}/>}/>
         <Route path="companies/:companyId" element={<Company logged_in={session} />} />
+        <Route path="vc-funds" element={<VC_Funds logged_in={session}/>}/>
+        <Route path="vc-funds/:vcId" element={<VC_Fund logged_in={session} />} />
         <Route path="about" element={<About/>}/>
         <Route path="/" element={<Home logged_in={session} />}/>
       </Routes>
