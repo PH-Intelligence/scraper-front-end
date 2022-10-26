@@ -1,20 +1,19 @@
-// import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import GenericDataTable from './GenericDataTable';
-import { supabase } from './supabaseClient'
+import { supabase } from './supabaseClient';
 import Container from '@mui/material/Container';
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
 import { findFlagFromCountry } from './country_flags.js'
 
 export default function VC_Fund(props) {
+
   let { vcId } = useParams();
 
-  const [vcData, setVcData] = useState(null);
+  const [vcData, setVcData] = useState([]);
   const loggedIn = useRef(-1);
   const isLoading = useRef(false);
 
   const columns = [
-    { field: 'fund', headerName: 'VC Fund', valueGetter: (params) => { return `${findFlagFromCountry(params.row.country)} ${params.row.fund}` }, flex: 1 },
     { field: 'company', headerName: 'Company', valueGetter: (params) => { return `${findFlagFromCountry(params.row.location ? params.row.location : '')} ${params.row.company}` }, flex: 0.5 },
     { field: 'usd_normalized', headerName: 'Total Round Amount (US$)', valueFormatter: (params: GridValueFormatterParams<number>) => {
               if (params.value == null) {
@@ -50,6 +49,8 @@ export default function VC_Fund(props) {
           id,
           fund,
           country,
+          clearbit_logo,
+          clearbit_domain,
           funding_rounds (
             id,
             company,
@@ -69,12 +70,7 @@ export default function VC_Fund(props) {
           console.log('VC_Fund.js has loaded this: ');
           console.log(data[0]);
 
-          setVcData(data[0].funding_rounds.map(function(el) {
-            return Object.assign(el, {
-              'fund': data[0].fund,
-              'country': data[0].country
-            });
-          }));
+          setVcData(data[0]);
 
           isLoading.current = false;
 
@@ -85,9 +81,23 @@ export default function VC_Fund(props) {
   }, [props.logged_in, vcId])
 
   return (
-    <Container>
-      <GenericDataTable logged_in={props.logged_in} columns={columns} rows={vcData} />
-    </Container>
-
+    <>
+      <Container>
+        {
+          vcData != null && vcData.clearbit_logo != null ?
+          (vcData.clearbit_domain != null ? (<a href={'https://' + vcData.clearbit_domain} target="_blank"><img src={vcData.clearbit_logo} height="50" /></a>) : (<img src={vcData.clearbit_logo} height="50" />)
+          )
+          :
+          ""
+        }
+        <h3 style={{marginBottom: '3px'}}>{vcData != null ? vcData.fund : ''}</h3>
+        <div style={{marginBottom: '15px'}}>
+          { vcData.country ? findFlagFromCountry(vcData.country) : '' }
+        </div>
+      </Container>
+      <Container>
+        <GenericDataTable logged_in={props.logged_in} columns={columns} rows={ vcData ? vcData.funding_rounds : [] } />
+      </Container>
+    </>
     )
 }

@@ -5,7 +5,6 @@ import CompanyIndex from './CompanyIndex';
 import Company from './Company';
 import VC_Funds from './VC_Funds';
 import VC_Fund from './VC_Fund';
-import DataTable from './DataTable';
 import { supabase } from './supabaseClient';
 import Container from '@mui/material/Container';
 import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
@@ -49,12 +48,14 @@ export default function App() {
         </ListItemIcon>
         <ListItemText primary="Companies" />
       </ListItemButton>
+      {/*
       <ListItemButton component={Link} to="/vc-funds">
         <ListItemIcon>
           <Savings />
         </ListItemIcon>
         <ListItemText primary="VC Funds" />
       </ListItemButton>
+      */}
       <ListItemButton component={Link} to="/about">
         <ListItemIcon>
           <Info />

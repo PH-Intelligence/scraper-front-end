@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import DataTable from './DataTable';
 import Container from '@mui/material/Container';
 import { supabase } from './supabaseClient';
 import {

@@ -1,17 +1,35 @@
-// import { useState, useEffect, useRef } from "react";
-import DataTable from './DataTable';
+import * as React from 'react';
+import { useState, useEffect, useRef } from "react";
+import GenericDataTable from './GenericDataTable';
 import { supabase } from './supabaseClient'
 import Container from '@mui/material/Container';
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
 import ApexCharts from 'apexcharts';
 
 export default function Company(props) {
+
   let { companyId } = useParams();
 
-  const [companyData, setCompanyData] = useState(null);
+  const [companyData, setCompanyData] = useState([]);
   const loggedIn = useRef(-1);
   const isLoading = useRef(false);
+
+  const columns = [
+    // { field: 'id', headerName: 'ID' },
+    { field: 'timestamp', headerName: 'Date & Time', valueFormatter: (params) => { return loggedIn.current ? new Date(params.value * 1000).toLocaleString(undefined, {year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric"}) : new Date(params.value * 1000).toLocaleString(undefined, {year: "numeric", month: "numeric", day: "numeric", hour: "numeric" }) }, flex: 0.75 }, // https://stackoverflow.com/a/34015511/3593246
+    { field: 'employees', headerName: 'Employees', valueFormatter: (params: GridValueFormatterParams<number>) => {
+                if (params.value == null) {
+                  return '';
+                }
+                return params.value.toLocaleString();
+              }, flex: 0.5 },
+    { field: 'job_openings', headerName: 'Job Openings', valueFormatter: (params: GridValueFormatterParams<number>) => {
+                if (params.value == null) {
+                  return '';
+                }
+                return params.value.toLocaleString();
+              }, flex: 0.5 }
+  ]
 
   useEffect(() => {
 
@@ -131,7 +149,10 @@ export default function Company(props) {
           :
           ""
         }
-        <h3>{companyData != null ? companyData.company : ''}</h3>
+        <h3 style={{marginBottom: '3px'}}>{companyData != null ? companyData.company : ''}</h3>
+        <div style={{marginBottom: '15px'}}>
+        { companyData.tags ? companyData.tags.split(",").map(x => <React.Fragment key={x}><span style={{backgroundColor: '#add4ce', borderRadius: '10px', padding: '0px 5px'}}>{x}</span>&nbsp;</React.Fragment>) : '' }
+        </div>
         {
           companyData != null && companyData.linkedin != null ?
           (<a href={companyData.linkedin} target="_blank"><img src={process.env.PUBLIC_URL + '/linkedin.png'} height="21" /></a>)
@@ -147,7 +168,7 @@ export default function Company(props) {
         <div id='chart'></div>
       </Container>
       <Container>
-        <DataTable logged_in={props.logged_in} company_id={companyId} company_data={companyData} />
+        <GenericDataTable logged_in={props.logged_in} columns={columns} rows={companyData ? companyData.linkedin_jobs : []} />
       </Container>
     </>
     )
