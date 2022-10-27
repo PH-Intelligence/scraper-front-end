@@ -54,7 +54,7 @@ export default function CompanyIndex(props) {
         `)
         .order('company', { ascending: true })
         .order('date_and_time', {foreignTable: 'linkedin_jobs', ascending: false})
-        .limit(1, {foreignTable: 'linkedin_jobs'})
+        .limit(2, {foreignTable: 'linkedin_jobs'})
       )
       // console.log('We have just made 1 API call');
 
@@ -83,12 +83,19 @@ export default function CompanyIndex(props) {
       var a_employees_and_jobs = a.linkedin_jobs.length > 0 ? [a.linkedin_jobs[0].employees, a.linkedin_jobs[0].job_openings] : [0,0]
       var b_employees_and_jobs = b.linkedin_jobs.length > 0 ? [b.linkedin_jobs[0].employees, b.linkedin_jobs[0].job_openings] : [0,0]
 
+      var a_employees_and_jobs_delta = a.linkedin_jobs.length > 1 ? [Math.abs(a.linkedin_jobs[0].employees - a.linkedin_jobs[1].employees), Math.abs(a.linkedin_jobs[0].job_openings - a.linkedin_jobs[1].job_openings)] : [0,0]
+      var b_employees_and_jobs_delta = b.linkedin_jobs.length > 1 ? [Math.abs(b.linkedin_jobs[0].employees - b.linkedin_jobs[1].employees), Math.abs(b.linkedin_jobs[0].job_openings - b.linkedin_jobs[1].job_openings)] : [0,0]
+
       if (sort_method == 'alphabetical') {
         return a.company.localeCompare(b.company);
       } else if (sort_method == 'employees') {
         return b_employees_and_jobs[0] - a_employees_and_jobs[0];
       } else if (sort_method == 'openings') {
         return b_employees_and_jobs[1] - a_employees_and_jobs[1];
+      } else if (sort_method == 'employee_mover') {
+        return b_employees_and_jobs_delta[0] - a_employees_and_jobs_delta[0];
+      } else if (sort_method == 'job_mover') {
+        return b_employees_and_jobs_delta[1] - a_employees_and_jobs_delta[1];
       }
 
     }));
@@ -127,10 +134,24 @@ export default function CompanyIndex(props) {
     <>
       <h3>Please select a company.</h3>
       <Grid container rowSpacing={1} columnSpacing={1} style={{marginTop: '15px'}}>
-        Sort by:&nbsp;
-        <button onClick={() => reSort('alphabetical')}>Company name</button>&nbsp;
-        <button onClick={() => reSort('employees')}>Current employee count</button>&nbsp;
-        <button onClick={() => reSort('openings')}>Current job opening count</button>
+        <Grid item>
+          Sort by:
+        </Grid>
+        <Grid item>
+          <button onClick={() => reSort('alphabetical')}>Company name</button>
+        </Grid>
+        <Grid item>
+          <button onClick={() => reSort('employees')}>Current employee count</button>
+        </Grid>
+        <Grid item>
+          <button onClick={() => reSort('openings')}>Current job opening count</button>
+        </Grid>
+        <Grid item>
+          <button onClick={() => reSort('employee_mover')}>Recent employee delta</button>
+        </Grid>
+        <Grid item>
+          <button onClick={() => reSort('job_mover')}>Recent job opening delta</button>
+        </Grid>
       </Grid>
       <Grid container rowSpacing={1} columnSpacing={1} style={{marginTop: '15px'}}>
         Filter tags:&nbsp;
