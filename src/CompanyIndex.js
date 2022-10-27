@@ -54,7 +54,7 @@ export default function CompanyIndex(props) {
         `)
         .order('company', { ascending: true })
         .order('date_and_time', {foreignTable: 'linkedin_jobs', ascending: false})
-        .limit(2, {foreignTable: 'linkedin_jobs'})
+        .limit(7, {foreignTable: 'linkedin_jobs'})
       )
       // console.log('We have just made 1 API call');
 
@@ -83,8 +83,8 @@ export default function CompanyIndex(props) {
       var a_employees_and_jobs = a.linkedin_jobs.length > 0 ? [a.linkedin_jobs[0].employees, a.linkedin_jobs[0].job_openings] : [0,0]
       var b_employees_and_jobs = b.linkedin_jobs.length > 0 ? [b.linkedin_jobs[0].employees, b.linkedin_jobs[0].job_openings] : [0,0]
 
-      var a_employees_and_jobs_delta = a.linkedin_jobs.length > 1 ? [Math.abs(a.linkedin_jobs[0].employees - a.linkedin_jobs[1].employees), Math.abs(a.linkedin_jobs[0].job_openings - a.linkedin_jobs[1].job_openings)] : [0,0]
-      var b_employees_and_jobs_delta = b.linkedin_jobs.length > 1 ? [Math.abs(b.linkedin_jobs[0].employees - b.linkedin_jobs[1].employees), Math.abs(b.linkedin_jobs[0].job_openings - b.linkedin_jobs[1].job_openings)] : [0,0]
+      var a_employees_and_jobs_delta = a.linkedin_jobs.length > 1 ? [Math.max(...a.linkedin_jobs.map(x => x.employees)) - Math.min(...a.linkedin_jobs.map(x => x.employees)), Math.max(...a.linkedin_jobs.map(x => x.job_openings)) - Math.min(...a.linkedin_jobs.map(x => x.job_openings))] : [0,0]
+      var b_employees_and_jobs_delta = b.linkedin_jobs.length > 1 ? [Math.max(...b.linkedin_jobs.map(x => x.employees)) - Math.min(...b.linkedin_jobs.map(x => x.employees)), Math.max(...b.linkedin_jobs.map(x => x.job_openings)) - Math.min(...b.linkedin_jobs.map(x => x.job_openings))] : [0,0]
 
       if (sort_method == 'alphabetical') {
         return a.company.localeCompare(b.company);
