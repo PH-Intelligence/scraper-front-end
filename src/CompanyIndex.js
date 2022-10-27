@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState, useEffect, useRef } from "react";
 import Container from '@mui/material/Container';
 import { supabase } from './supabaseClient';
@@ -10,10 +11,15 @@ import {
   useMatch,
   useParams
 } from "react-router-dom";
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
 
 export default function CompanyIndex(props) {
 
   const [companyData, setCompanyData] = useState([]);
+  const [tagsData, setTagsData] = useState([]);
+  const [selectedTagsData, setSelectedTagsData] = useState([]);
+  const [filteredCompanyData, setFilteredCompanyData] = useState([]);
   const loggedIn = useRef(-1);
   const isLoading = useRef(false);
 
@@ -59,6 +65,10 @@ export default function CompanyIndex(props) {
           // console.log('changing');
           isLoading.current = false;
           setCompanyData(data);
+          setFilteredCompanyData(data);
+          var tags_array = [...new Set([].concat(...data.map(x => x.tags_array)))].sort((a,b) => { return a.localeCompare(b); }); // Taken from https://stackoverflow.com/a/51315034/3593246
+          setTagsData(tags_array);
+          setSelectedTagsData(tags_array);
         }
 
     })()
@@ -67,7 +77,7 @@ export default function CompanyIndex(props) {
 
   const reSort = sort_method => {
     // console.log(companyData);
-    setCompanyData([...companyData].sort((a, b) => {
+    setFilteredCompanyData([...filteredCompanyData].sort((a, b) => {
 
       // We need these lines because, when we add a brand-new company that doesn't yet have any employees or job openings data, the sorting would throw an error unless we set their employees/openings numbers to 0
       var a_employees_and_jobs = a.linkedin_jobs.length > 0 ? [a.linkedin_jobs[0].employees, a.linkedin_jobs[0].job_openings] : [0,0]
@@ -84,25 +94,70 @@ export default function CompanyIndex(props) {
     }));
   };
 
+  const handleClick = (tag) => {
+
+    if (tag == -1) {
+      setSelectedTagsData(tagsData);
+      setFilteredCompanyData(companyData);
+      return;
+    } else if (tag == -2) {
+      setSelectedTagsData([]);
+      setFilteredCompanyData([]);
+      return;
+    }
+
+    var new_selected_tags;
+    if (selectedTagsData.includes(tag)) {
+      new_selected_tags = selectedTagsData.filter(x => x != tag);
+    } else {
+      new_selected_tags = selectedTagsData.concat([tag]);
+    }
+    setSelectedTagsData(new_selected_tags);
+
+    var new_filtered_companies = [];
+    companyData.forEach(company => {
+      if (company.tags_array.filter(x => new_selected_tags.includes(x)).length > 0) {
+        new_filtered_companies.push(company);
+      }
+    });
+    setFilteredCompanyData(new_filtered_companies);
+  };
 
   return (
-  <>
-    <h3>Please select a company.</h3>
-    <div>
-      Sort by:&nbsp;
-      <button onClick={() => reSort('alphabetical')}>Company name</button>&nbsp;
-      <button onClick={() => reSort('employees')}>Current employee count</button>&nbsp;
-      <button onClick={() => reSort('openings')}>Current job opening count</button>
-    </div>
-    <ul>
-      {companyData.map((company) => (
-        <li key={company.id}>
-          <Link to={`/companies/${company.id}`}>
-            {company.company}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  </>
+    <>
+      <h3>Please select a company.</h3>
+      <Grid container rowSpacing={1} columnSpacing={1} style={{marginTop: '15px'}}>
+        Sort by:&nbsp;
+        <button onClick={() => reSort('alphabetical')}>Company name</button>&nbsp;
+        <button onClick={() => reSort('employees')}>Current employee count</button>&nbsp;
+        <button onClick={() => reSort('openings')}>Current job opening count</button>
+      </Grid>
+      <Grid container rowSpacing={1} columnSpacing={1} style={{marginTop: '15px'}}>
+        Filter tags:&nbsp;
+        <button onClick={() => handleClick(-1)}>Select all</button>&nbsp;
+        <button onClick={() => handleClick(-2)}>Select none</button>&nbsp;
+      </Grid>
+      <Grid container rowSpacing={1} columnSpacing={1} style={{marginTop: '15px'}}>
+        {tagsData.map((tag) => (
+          selectedTagsData.indexOf(tag) != -1 ?
+          (<Grid item key={tag}>
+            <Chip label={tag} color="primary" size="small" onClick={() => handleClick(tag)} clickable variant="filled" />
+          </Grid>)
+          :
+          (<Grid item key={tag}>
+            <Chip label={tag} color="primary" size="small" onClick={() => handleClick(tag)} clickable variant="outlined" />
+          </Grid>)
+        ))}
+      </Grid>
+      <ul>
+        {filteredCompanyData.map((company) => (
+          <li key={company.id}>
+            <Link to={`/companies/${company.id}`}>
+              {company.company}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }
