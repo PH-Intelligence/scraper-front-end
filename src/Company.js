@@ -109,8 +109,8 @@ export default function Company(props) {
           markers_to_show = markers_to_show.map(x => ({
             seriesIndex: 1,
             dataPointIndex: x,
-            fillColor: '#feb019',
-            strokeColor: '#feb019',
+            fillColor: '#00e396',
+            strokeColor: '#00e396',
             size: 5,
             shape: "circle" 
           }));
@@ -180,9 +180,12 @@ export default function Company(props) {
             }
           ];
 
+          var chart_colors = ['#008ffb', '#00e396', '#feb019'];
+
           if (markers_to_show.length == 0) {
             data_series.splice(1,1);
             y_axes.splice(1,1);
+            chart_colors.splice(1,1);
           }
 
           
@@ -192,7 +195,7 @@ export default function Company(props) {
               type: 'line',
               height: 400
             },
-            colors: ['#008ffb', '#feb019', '#00e396'],
+            colors: chart_colors,
             series: data_series,
             xaxis: {
               // categories: sorted_data.map(x => new Date(x.timestamp * 1000).toLocaleDateString("en-US")),
