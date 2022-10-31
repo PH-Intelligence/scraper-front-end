@@ -19,7 +19,7 @@ export default function VC_Fund(props) {
               if (params.value == null) {
                 return '';
               }
-              return '$' + params.value.toLocaleString();
+              return '$' + Math.round(params.value).toLocaleString();
             }, flex: 0.5 },
     { field: 'funding_round', headerName: 'Round', flex: 0.5 }
   ]

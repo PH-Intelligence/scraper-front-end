@@ -65,9 +65,14 @@ export default function Company(props) {
             employees,
             job_openings,
             timestamp
+          ),
+          sec_data(
+            employee_count,
+            as_of_date
           )
         `).eq('id', companyId).order('timestamp', {foreignTable: 'linkedin_jobs', ascending: false }))
       console.log('We have just made 1 API call');
+      console.log(data);
 
       if (error)
         console.log('Error occurred:', error)
@@ -78,59 +83,138 @@ export default function Company(props) {
           isLoading.current = false;
           setCompanyData(data[0]);
 
-          var sorted_data = [...data[0].linkedin_jobs].sort((a, b) => { return a.timestamp - b.timestamp } )
+          // "GMT" parts borrowed from here: https://github.com/apexcharts/apexcharts.js/issues/209
+          var sorted_data = [...data[0].linkedin_jobs].sort((a, b) => { return a.timestamp - b.timestamp } );
+          var data2 = sorted_data.map(a => ({
+                  x: new Date(a.timestamp * 1000).toLocaleDateString("en-US") + " GMT",
+                  y: null
+                }));
+          data2.sort((a,b) => {return new Date(a.x) - new Date(b.x) });
+
+          var markers_to_show = [];
+
+          for (var i=0; i < data[0].sec_data.length; i++) {
+
+            var matching_dates = data2.filter(x => x.x == new Date(data[0].sec_data[i].as_of_date).toLocaleDateString("en-US") + " GMT");
+            console.log(matching_dates);
+
+            for (var z=0; z < matching_dates.length; z++) {
+              var model_match = Object.assign(matching_dates[z], {y: null});
+              console.log(model_match);
+              markers_to_show.push(data2.indexOf(model_match));
+              data2.splice(data2.indexOf(model_match), 1, {x: new Date(data[0].sec_data[i].as_of_date).toLocaleDateString("en-US") + " GMT", y: data[0].sec_data[i].employee_count });
+            }
+          }
+
+          markers_to_show = markers_to_show.map(x => ({
+            seriesIndex: 1,
+            dataPointIndex: x,
+            fillColor: '#feb019',
+            strokeColor: '#feb019',
+            size: 5,
+            shape: "circle" 
+          }));
+
+          var data_series = [
+            {
+              name: 'Employees',
+              type: 'line',
+              data: sorted_data.map(a => ({
+                x: new Date(a.timestamp * 1000).toLocaleDateString("en-US") + " GMT",
+                y: a.employees
+              }))
+            },
+            {
+              name: 'Verified Employees',
+              type: 'line',
+              data: data2
+            },
+            {
+              name: 'Job Openings',
+              type: 'line',
+              data: sorted_data.map(a => ({
+                x: new Date(a.timestamp * 1000).toLocaleDateString("en-US") + " GMT",
+                y: a.job_openings
+              }))
+            }
+          ];
+
+          var y_axes = [
+            {
+              seriesName: 'Employees',
+              title: {
+                text: 'Employees'
+              },
+              labels: {
+                formatter: function(val, index) {
+                  return val.toLocaleString();
+                }
+              },
+              forceNiceScale: true,
+              min: Math.min(...sorted_data.map(x => x.employees), ...data[0].sec_data.map(x => x.employee_count))
+            },
+            {
+              seriesName: 'Employees',
+              labels: {
+                formatter: function(val, index) {
+                    return val ? `${val.toLocaleString()} (SEC Filing)` : null;
+                }
+              },
+              forceNiceScale: true,
+              min: Math.min(...sorted_data.map(x => x.employees), ...data[0].sec_data.map(x => x.employee_count)),
+              show: false
+            },
+            {
+              opposite: true,
+              seriesName: 'Job Openings',
+              title: {
+                text: 'Job Openings'
+              },
+              labels: {
+                formatter: function(val, index) {
+                  return val.toLocaleString();
+                }
+              },
+              forceNiceScale: true,
+              min: Math.min(...sorted_data.map(x => x.job_openings))
+            }
+          ];
+
+          if (markers_to_show.length == 0) {
+            data_series.splice(1,1);
+            y_axes.splice(1,1);
+          }
+
+          
+
           var options = {
             chart: {
               type: 'line',
               height: 400
             },
-            series: [
-              {
-                name: 'Employees',
-                data: sorted_data.map(x => x.employees)
-              },
-              {
-                name: 'Job Openings',
-                data: sorted_data.map(x => x.job_openings)
-              }
-            ],
+            colors: ['#008ffb', '#feb019', '#00e396'],
+            series: data_series,
             xaxis: {
-              categories: sorted_data.map(x => new Date(x.timestamp * 1000).toLocaleDateString("en-US")),
+              // categories: sorted_data.map(x => new Date(x.timestamp * 1000).toLocaleDateString("en-US")),
+              type: 'datetime',
               hideOverlappingLabels: true
+              // showDuplicates: false
             },
-            yaxis: [
-              {
-                title: {
-                  text: 'Employees'
-                },
-                labels: {
-                  formatter: function(val, index) {
-                    return val.toLocaleString();
-                  }
-                },
-                forceNiceScale: true,
-                min: Math.min(...sorted_data.map(x => x.employees))
-              },
-              {
-                opposite: true,
-                title: {
-                  text: 'Job Openings'
-                },
-                labels: {
-                  formatter: function(val, index) {
-                    return val.toLocaleString();
-                  }
-                },
-                forceNiceScale: true,
-                min: Math.min(...sorted_data.map(x => x.job_openings))
-              }
-            ],
+            yaxis: y_axes,
             stroke: {
               width: 2,
               curve: 'smooth'
+            },
+            tooltip: {
+              shared: true,
+              theme: 'dark'
+            },
+            markers: {
+              discrete: markers_to_show
             }
           }
           var chart = new ApexCharts(document.querySelector("#chart"), options);
+          console.log(options);
           chart.render();
 
         }
