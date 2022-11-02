@@ -14,13 +14,14 @@ export default function VC_Fund(props) {
   const isLoading = useRef(false);
 
   const columns = [
+    { field: 'earliest_pub_date', headerName: 'Date', valueFormatter: (params) => { return new Date(params.value).toLocaleString(undefined, {year: "numeric", month: "numeric", day: "numeric"}) }, flex: 0.5 }, // https://stackoverflow.com/a/34015511/3593246
     { field: 'company', headerName: 'Company', valueGetter: (params) => { return `${findFlagFromCountry(params.row.location ? params.row.location : '')} ${params.row.company}` }, flex: 0.5 },
     { field: 'usd_normalized', headerName: 'Total Round Amount (US$)', valueFormatter: (params: GridValueFormatterParams<number>) => {
               if (params.value == null) {
                 return '';
               }
               return '$' + Math.round(params.value).toLocaleString();
-            }, flex: 0.5 },
+            }, type: 'number', flex: 0.5 },
     { field: 'funding_round', headerName: 'Round', flex: 0.5 }
   ]
 
@@ -58,7 +59,8 @@ export default function VC_Fund(props) {
             currency,
             usd_normalized,
             funding_round,
-            location
+            location,
+            earliest_pub_date
           )
         `).eq('id', vcId).order('earliest_pub_date', {foreignTable: 'funding_rounds', ascending: false }))
       console.log('We have just made 1 API call');

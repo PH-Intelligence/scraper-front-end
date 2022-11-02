@@ -139,6 +139,8 @@ export default function Company(props) {
             }
           ];
 
+          var y_axis_min = Math.max(0, Math.min(...sorted_data.map(x => x.employees), ...data2.filter(x => x.y != null).map(x => x.y)) - 100);
+
           var y_axes = [
             {
               seriesName: 'Employees',
@@ -151,7 +153,7 @@ export default function Company(props) {
                 }
               },
               forceNiceScale: true,
-              min: Math.min(...sorted_data.map(x => x.employees), ...data[0].sec_data.map(x => x.employee_count))
+              min: y_axis_min
             },
             {
               seriesName: 'Employees',
@@ -161,7 +163,7 @@ export default function Company(props) {
                 }
               },
               forceNiceScale: true,
-              min: Math.min(...sorted_data.map(x => x.employees), ...data[0].sec_data.map(x => x.employee_count)),
+              min: y_axis_min,
               show: false
             },
             {
