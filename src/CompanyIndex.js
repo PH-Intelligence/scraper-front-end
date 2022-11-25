@@ -249,7 +249,7 @@ export default function CompanyIndex(props) {
 
     var new_filtered_companies = [];
     companyData.forEach(company => {
-      if (company.tags_array.filter(x => new_selected_tags.includes(x)).length > 0) {
+      if (company.tags_array && company.tags_array.filter(x => new_selected_tags.includes(x)).length > 0) {
         new_filtered_companies.push(company);
       }
     });
