@@ -74,7 +74,7 @@ export default function CompanyIndex(props) {
             inProgressLoading.current = false;
             setCompanyData(data);
             setFilteredCompanyData(data);
-            var tags_array = [...new Set([].concat(...data.map(x => x.tags_array)))].sort((a,b) => { return a.localeCompare(b); }); // Taken from https://stackoverflow.com/a/51315034/3593246
+            var tags_array = [...new Set([].concat(...data.map(x => x.tags_array).filter(x => x != null )))].sort((a,b) => { return a.localeCompare(b); }); // Taken from https://stackoverflow.com/a/51315034/3593246
             setTagsData(tags_array);
             setSelectedTagsData(tags_array);
             filterChanged.current = true;
